@@ -39,28 +39,29 @@ export const getAllTaskControllera = async (req, res) => {
         for (let task of tasks) {
             const taskId = task._id.toString(); 
             const taskDueDate = new Date(task.duedate); 
-            const remainingDays = Math.floor((taskDueDate - currentDate) / (1000 * 60 * 60 * 24));           
+            const remainingDays = Math.floor((taskDueDate - currentDate) / (1000 * 60 * 60 * 24));     
+
             if (remainingDays <= 0) {
-                var updatedTask = await TaskData.findByIdAndUpdate(taskId,{ status: 'completed',remday:remainingDays}, { new: true });
-                const emailData ={
-                    from: 'noreply@node-react.com',
-                    to: email, 
-                    subject: 'your task deadline reminder',
-                    text: `Name: ${name}`,
-                    html: `
-                        <h2>Deadline Reminder </h2>
-                        <p><strong>Name:</strong> ${name}</p>
-                        <p><strong>Email:</strong> ${email}</p>
-                        <p><strong>Message:</strong></p>
-                        <p>${updatedTask.title}</p>                       
-                        <p>${updatedTask.description}</p>
-                        <p>${updatedTask.status}</p>
-                        <p>${updatedTask.remday}</p>
-                        `
-                };
+                var updatedTask = await TaskData.findByIdAndUpdate(taskId,{ status:'completed',remday:remainingDays}, { new: true });
+            //     const emailData ={
+            //         from: 'noreply@node-react.com',
+            //         to: email, 
+            //         subject: 'your task deadline reminder',
+            //         text: `Name: ${name}`,
+            //         html: `
+            //             <h2>Deadline Reminder </h2>
+            //             <p><strong>Name:</strong> ${name}</p>
+            //             <p><strong>Email:</strong> ${email}</p>
+            //             <p><strong>Message:</strong></p>
+            //             <p>${updatedTask.title}</p>                       
+            //             <p>${updatedTask.description}</p>
+            //             <p>${updatedTask.status}</p>
+            //             <p>${updatedTask.remday}</p>
+            //             `
+            //     };
                 
         
-               sendEmail(emailData);
+            //    sendEmail(emailData);
             }
         }
         const alldata =await TaskData.find({userid:userId})
@@ -150,10 +151,30 @@ export const updateTaskContolller = async(req,res)=>{
         updatedtask
     })
     }catch(error){
-        return res.status(500).send({
+            return res.status(500).send({
             success:false,
             message:"Error in update the task",
             error:error.message
          })
     }
 }  
+
+export const getSingleTaskController =async(req,res)=>{
+    try{
+    const id = req.params.id;
+    
+    const SingleData = await TaskData.findById(id);
+    return res.status(200).send({
+        success:true,
+        message:"here is your single Data",
+        SingleData
+    })
+
+    }catch(error){
+        return res.status(500).send({
+            success:false,
+            message:"Error in getting the task",
+            error:error.message
+         })
+    }
+}
